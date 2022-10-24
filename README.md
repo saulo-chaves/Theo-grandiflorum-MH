@@ -12,11 +12,13 @@ Analysis.rmd: The Rmarkdown file we used to build the "Analysis.pdf" file
 
 The two figures below summarize our highlights
 
-![Fig1](https://user-images.githubusercontent.com/101746579/197646454-f11dc565-55b0-40bb-846d-d3b2dac0ecf4.svg)
+![Fig1](https://user-images.githubusercontent.com/101746579/197646549-d70a31e6-21ba-454f-9986-51700cbb9d03.png)
+
 
 Only two harvest years are enough for selecting for recombination. For recommendation, seven harvest years will do. For having lower repeatability, the FY (Fruit yield) trait will benefit more than RWB (Resistance to witches' broom) when using more harvest years in the evaluation.
 
 
-![Fig2](https://user-images.githubusercontent.com/101746579/197646465-a906fc9d-308f-413d-b7e9-3026f54382c8.svg)
+![Fig2](https://user-images.githubusercontent.com/101746579/197646565-5967ca00-e9d3-4e39-8e28-9fed7599b387.png)
+
 
 Of the ten selected hybrids using the additive index, seven are within the FY top ten and three are amongst the ten best for RWB. 
