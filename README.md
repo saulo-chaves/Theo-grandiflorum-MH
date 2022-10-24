@@ -1,4 +1,4 @@
-# Leveraging multi-harvest data for simultaneously selecting high-yield and witches’ broom-resistant \emph{Theobroma grandiflorum} hybrids
+# Leveraging multi-harvest data for simultaneously selecting high-yield and witches’ broom-resistant <i>Theobroma grandiflorum</i> hybrids
 
 This page's data and R scripts refer to the paper (add the DOI). Feel free to use it and contact me if there are any issues. 
 
@@ -12,13 +12,10 @@ Analysis.rmd: The Rmarkdown file we used to build the "Analysis.pdf" file
 
 The two figures below summarize our highlights
 
-![Fig1](https://user-images.githubusercontent.com/101746579/197646549-d70a31e6-21ba-454f-9986-51700cbb9d03.png)
-
+![Fig1](https://user-images.githubusercontent.com/101746579/197646809-46ee6720-cbca-42c1-9922-a20d7eb18ba7.png)
 
 Only two harvest years are enough for selecting for recombination. For recommendation, seven harvest years will do. For having lower repeatability, the FY (Fruit yield) trait will benefit more than RWB (Resistance to witches' broom) when using more harvest years in the evaluation.
 
-
-![Fig2](https://user-images.githubusercontent.com/101746579/197646565-5967ca00-e9d3-4e39-8e28-9fed7599b387.png)
-
+![Fig2](https://user-images.githubusercontent.com/101746579/197646815-acc4f728-f8d5-44f1-b173-db1e7871afdb.png)
 
 Of the ten selected hybrids using the additive index, seven are within the FY top ten and three are amongst the ten best for RWB. 
