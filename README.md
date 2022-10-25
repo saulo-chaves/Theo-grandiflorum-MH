@@ -18,4 +18,4 @@ Only three harvest years are enough for selecting for recombination. For recomme
 
 ![Fig2](https://user-images.githubusercontent.com/101746579/197646815-acc4f728-f8d5-44f1-b173-db1e7871afdb.png)
 
-Of the ten selected hybrids using the additive index, seven are within the FY top ten and three are amongst the ten best for RWB. 
+Of the ten selected hybrids using the additive index, seven are within the FY top ten and five are amongst the ten best for RWB. Three are amongst the top ten for both traits
