@@ -14,7 +14,7 @@ The two figures below summarize our highlights
 
 ![Fig1](https://user-images.githubusercontent.com/101746579/197646809-46ee6720-cbca-42c1-9922-a20d7eb18ba7.png)
 
-Only two harvest years are enough for selecting for recombination. For recommendation, seven harvest years will do. For having lower repeatability, the FY (Fruit yield) trait will benefit more than RWB (Resistance to witches' broom) when using more harvest years in the evaluation.
+Only three harvest years are enough for selecting for recombination. For recommendation, nine harvest years will do. For having lower repeatability, the FY (Fruit yield) trait will benefit more than RWB (Resistance to witches' broom) when using more harvest years in the evaluation.
 
 ![Fig2](https://user-images.githubusercontent.com/101746579/197646815-acc4f728-f8d5-44f1-b173-db1e7871afdb.png)
 
