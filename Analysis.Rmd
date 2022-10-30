@@ -1,0 +1,340 @@
+---
+title: |
+        Leveraging multi-harvest data for increasing genetic gains per unit of time for fruit yield and resistance to witches’ broom in  \emph{Theobroma grandiflorum}
+author: 
+  - Saulo Fabrício da Silva Chaves
+  
+  - Luiz Antônio dos Santos Dias
+  
+  - Rodrigo Silva Alves
+  
+  - Jeniffer Santana Pinto Coelho Evangelista
+  
+  - Kaio Olimpio das Graças Dias
+  
+output: 
+  pdf_document:
+    toc: yes
+    keep_tex: true
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: flatly
+    highlight: haddock
+    fig_width: 10
+    fig_height: 8
+fontsize: 11pt
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+# Required packages
+
+```{r, echo=TRUE, eval=FALSE}
+require(asreml)
+require(tidyverse)
+require(patchwork)
+```
+
+```{r, echo=FALSE, include=FALSE}
+require(asreml)
+require(tidyverse)
+require(kableExtra)
+require(patchwork)
+```
+
+
+# Loading the data
+
+```{r echo=TRUE}
+data = read.csv("data.csv", header = T, sep=';')
+
+```
+
+# Setting the factors
+
+```{r}
+
+data = transform(data,
+                 Harvests = factor(Harvests),
+                 Plots = factor(Plots),
+                 Replicates = factor(Replicates),
+                 Hybrids = factor(Hybrids))
+
+```
+
+# Linear Mixed Models
+
+## Homoscedastic model for Fruit Yield
+
+```{r, echo=TRUE,results='hide'}
+
+fy1 = asreml(fixed = yd ~ Harvests + Replicates:Harvests, 
+             random = ~ Hybrids + Hybrids:Harvests + Plots,
+             data = data)
+
+sum.fy1 = summary(fy1)$varcomp[,1:2]
+
+sum.fy1$CI = sum.fy1$std.error * 1.96
+
+aic.fy1 = summary(fy1)$aic
+
+predfy1_vcov = predict(fy1, classify = "Hybrids", vcov = T)
+predfy1_sed = predict(fy1, classify = "Hybrids", sed = T)
+
+PEV = mean(diag(predfy1_vcov$vcov)) 
+MVdelta = mean((predfy1_sed$sed^2)[upper.tri(predfy1_sed$sed^2,diag = F)]) 
+
+acc1 = sqrt(1-(PEV/sum.fy1[1,1])) 
+her1 = 1-(MVdelta/(2*sum.fy1[1,1])) 
+
+```
+
+```{r echo=FALSE}
+
+
+sum.fy1 = rbind(sum.fy1, as.numeric(c(acc1,NA,NA)), as.numeric(c(her1, NA,NA)))
+rownames(sum.fy1) = c("$\\sigma^2_g$", "$\\sigma^2_p$", "$\\sigma^2_{gh}$", "$\\sigma^2_e$","$r$","$H^2_g$")
+
+sum.fy1 %>% kbl(escape = F, align = 'c',booktabs = T, col.names = c("Value", "Std. Error", "Conf. Int."),digits = 2)%>% kable_classic("hover", full_width = T, position = "center")
+
+```
+
+
+## Heteroscedastic model for Fruit Yield
+
+```{r echo=TRUE, results='hide'}
+
+fy2 = asreml(fixed = yd ~ Harvests + Replicates:Harvests, 
+             random = ~ Hybrids + Hybrids:Harvests + Plots,
+             residual = ~dsum(~id(units)|Harvests),
+             data = data)
+
+sum.fy2 = summary(fy2)$varcomp[,1:2]
+
+sum.fy2$CI = sum.fy2$std.error * 1.96
+
+aic.fy2 = summary(fy2)$aic
+
+predfy2_vcov = predict(fy2, classify = "Hybrids", vcov = T)
+predfy2_sed = predict(fy2, classify = "Hybrids", sed = T)
+
+PEV = mean(diag(predfy2_vcov$vcov)) 
+MVdelta = mean((predfy2_sed$sed^2)[upper.tri(predfy2_sed$sed^2,diag = F)]) 
+
+acc2 = sqrt(1-(PEV/sum.fy2[1,1])) 
+her2 = 1-(MVdelta/(2*sum.fy2[1,1])) 
+
+# Harvest-wise heritability
+
+her2j = NULL
+for(i in 1:nlevels(data$Harvests)){
+  predfy2_sed = predict(fy2, classify = "Hybrids:Harvests", 
+                        level=list(Harvests = i), sed = T)
+  
+  MVdelta = mean((predfy2_sed$sed^2)[upper.tri(predfy2_sed$sed^2,diag = F)])
+  
+  her2j[i] = 1-(MVdelta/(2*sum.fy2[1,1]))
+}
+
+blups.fy = coef(fy2)$random[grep("Hybrids", rownames(coef(fy2)$random))]
+
+
+```
+
+```{r echo=FALSE}
+
+sum.fy2a = rbind(sum.fy2, acc2, her2j[1],her2j[2],her2j[3],her2j[4],her2j[5],her2j[6],her2j[7],her2j[8],her2j[9])
+rownames(sum.fy2a) = c("$\\sigma^2_g$", "$\\sigma^2_p$", "$\\sigma^2_{gh}$", "$\\sigma^2_{e_1}$","$\\sigma^2_{e_2}$","$\\sigma^2_{e_3}$","$\\sigma^2_{e_4}$","$\\sigma^2_{e_5}$","$\\sigma^2_{e_6}$","$\\sigma^2_{e_7}$","$\\sigma^2_{e_8}$","$\\sigma^2_{e_9}$","$r$","$H^2_{g_1}$","$H^2_{g_2}$","$H^2_{g_3}$","$H^2_{g_4}$","$H^2_{g_5}$","$H^2_{g_6}$","$H^2_{g_7}$","$H^2_{g_8}$","$H^2_{g_9}$")
+
+sum.fy2a %>% kbl(escape = F, align = 'c',booktabs = T, col.names = c("Value", "Std. Error", "Conf. Int."),digits = 2)%>% kable_classic("hover", full_width = T, position = "center")
+
+```
+
+### Coefficients of determination
+
+```{r echo=TRUE }
+
+sig2f = NULL
+cgh = NULL
+cp = NULL
+ce = NULL
+
+for (i in 1:nlevels(data$Harvests)) {
+  sig2f[i] = sum(sum.fy2[1:3,1]) + sum.fy2[i+3,1]
+  cgh[i] = sum.fy2["Hybrids:Harvests", "component"] / sig2f[i] 
+  cp[i] = sum.fy2["Plots", "component"] / sig2f[i] 
+  ce[i] = sum.fy2[i+3,1] / sig2f[i] 
+}
+
+coef.det = data.frame(
+  "Harvests" = levels(data$Harvests),
+  "sig2f" = sig2f,
+  "chg" = cgh,
+  "cp" = cp,
+  "ce" = ce
+)
+  
+  
+```
+
+```{r echo=FALSE}
+coef.det %>% kbl(escape = F, align = 'c',booktabs = T, col.names = c("Harvests","$\\sigma^2_f$", "$c^2_{gh}$", "$c^2_p$","$c^2_e$"),digits = 2)%>% kable_classic("hover", full_width = T, position = "center")
+```
+
+
+## Generalized linear mixed model for witches' broom resistance
+
+```{r echo=TRUE, results='hide'}
+
+wb = asreml(fixed = wb ~ Harvests + Replicates:Harvests, 
+            random = ~ Hybrids + Hybrids:Harvests + Plots,
+            family=asr_binomial(link="logit"),
+            data = data, maxit = 100)
+
+sum.wb = summary(wb)$varcomp[,1:2]
+
+sum.wb$CI = sum.wb$std.error * 1.96
+
+predwb = predict(wb, classify = "Hybrids", sed = T)
+
+MVdelta = mean((predwb$sed^2)[upper.tri(predwb$sed^2,diag = F)]) 
+
+herwb = 1-(MVdelta/(2*sum.wb[1,1])) 
+
+blups.wb = coef(wb)$random[1:nlevels(data$Hybrids)]
+
+```
+
+
+## Optimum number of harvests
+
+```{r echo=TRUE}
+
+rho_fy = NULL
+for (i in 1:nlevels(data$Harvests)) {
+  rho_fy[i] = sum(sum.fy2["Hybrids","component"],sum.fy2["Plots","component"])/
+    sig2f[i] 
+}
+
+rho_fy = mean(rho_fy) #Fruit yield repeatability
+
+rho_wb = sum(sum.wb["Hybrids","component"],sum.wb["Plots","component"])/
+    sum(c(sum.wb[1:3,1],3.29)) #WB resistance repeatability
+
+
+effh_fy = NULL
+acch_fy = NULL
+effh_wb = NULL
+acch_wb = NULL
+for (i in 1:nlevels(data$Harvests)) {
+  effh_fy[i] = sqrt(i/(1+(i-1)*rho_fy))
+  effh_wb[i] = sqrt(i/(1+(i-1)*rho_wb)) 
+  acch_fy[i] = sqrt((i*rho_fy)/(i*rho_fy+1-rho_fy))
+  acch_wb[i] = sqrt((i*rho_wb)/(i*rho_wb+1-rho_wb))
+}
+
+a = data.frame(
+  "Harvests" = rep(levels(data$Harvests),2),
+  "Trait" = rep(c("FY", "RWB"),each = nlevels(data$Harvests)),
+  "Accuracy" = c(acch_fy,acch_wb)
+) %>% ggplot()+
+  geom_point(aes(x = Harvests, y = Accuracy, color = Trait, shape = Trait),
+             size=2)+
+  geom_line(aes(x = Harvests, y = Accuracy, color = Trait, group = Trait),
+            size=1)+
+  labs(y = "Comparative accuracy",x = "Harverst years",tag = "(A)")
+  
+
+b = data.frame(
+  "Harvests" = rep(levels(data$Harvests),2),
+  "Trait" = rep(c("FY", "RWB"),each = nlevels(data$Harvests)),
+  "Efficiency" = c((effh_fy-1)*100,(effh_wb-1)*100)
+) %>% ggplot()+
+  geom_point(aes(x = Harvests, y = Efficiency, color = Trait, shape = Trait),
+             size=2)+
+  geom_line(aes(x = Harvests, y = Efficiency, color = Trait, group = Trait),
+            size=1)+ ylim(0,60)+
+  labs(y = "Comparative efficiency (%)", x = "Harverst years",tag = "(B)")
+
+a/b
+
+```
+
+## Selection index
+
+### Obtaining the yield persistence
+
+```{r}
+
+blups.fy = left_join(data.frame(
+  'Hybrids' = rep(levels(data$Hybrids),each = nlevels(data$Harvests)),
+  'Harvests' = rep(levels(data$Harvests),nlevels(data$Hybrids)),
+  'blup' = blups.fy[(nlevels(data$Hybrids)+1):length(blups.fy)]
+), data.frame(
+  'Hybrids' = levels(data$Hybrids),
+  'blup' = blups.fy[1:nlevels(data$Hybrids)]
+), by='Hybrids') %>% mutate(
+  BLUP = blup.x + blup.y
+) %>% select(Hybrids, Harvests, BLUP)
+
+
+max.fy = blups.fy %>% group_by(Harvests) %>% 
+  summarise(max = max(BLUP))
+
+num = NULL
+
+for (i in levels(data$Hybrids)) {
+  
+  dttes = blups.fy %>% filter(Hybrids == i) %>% 
+    select(Hybrids,Harvests,BLUP)
+  
+  num[i] = 1/sum((dttes$BLUP - max.fy$max)^2)
+    
+}
+
+den = sum(num)^2
+
+Per.fy = num/den
+Per.fy = rownames_to_column(as.data.frame(Per.fy),'Hybrids')
+
+```
+
+
+### Additive index
+
+```{r}
+
+blups.fy = blups.fy %>% group_by(Hybrids) %>% 
+              summarise(BLUP = mean(BLUP))
+
+AI = cbind(Per.fy,blups.fy$BLUP,blups.wb)
+
+colnames(AI)[2:4] = c("PERS.FY","BLUP.FY","BLUP.RWB")
+
+AI = AI %>% mutate(
+  AI = (BLUP.FY/sqrt(sum.fy2["Hybrids","component"])) - 
+    (BLUP.RWB/sqrt(sum.wb["Hybrids","component"]))
+)
+
+```
+
+```{r echo=FALSE}
+
+AI[order(AI$AI, decreasing = T),] %>% kbl(escape = F, align = 'c',booktabs = T,digits = 2, row.names = F)%>% kable_classic("hover", full_width = T, position = "center")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
