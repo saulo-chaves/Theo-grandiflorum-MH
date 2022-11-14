@@ -6,7 +6,7 @@ The files contain the following:
 
 data.csv: The phenotypic data we used to perform the analyses. 
 
-Analysis.pdf: The R script in a more precise visualization
+Analysis.pdf: The R script in a more concise visualization
 
 Analysis.rmd: The Rmarkdown file we used to build the "Analysis.pdf" file
 
