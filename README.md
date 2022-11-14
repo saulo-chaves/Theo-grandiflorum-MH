@@ -10,7 +10,7 @@ Analysis.pdf: The R script in a more concise visualization
 
 Analysis.rmd: The Rmarkdown file we used to build the "Analysis.pdf" file
 
-The two figures below summarize our highlights
+The two figures below summarize our main results
 
 ![Fig1](https://user-images.githubusercontent.com/101746579/198885889-7a9abd4b-bed9-4930-9226-d94df5a42860.png)
 
