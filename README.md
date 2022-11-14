@@ -1,6 +1,6 @@
 # Leveraging multi-harvest data for increasing genetic gains per unit of time for fruit yield and resistance to witches’ broom in <i>Theobroma grandiflorum</i> 
 
-This page's data and R scripts refer to the paper (In Review). Feel free to use it and contact me if there are any issues. 
+This page's data and R scripts refer to the paper https://doi.org/10.1007/s10681-022-03126-5. Feel free to use it and contact me if there are any issues. 
 
 The files contain the following:
 
